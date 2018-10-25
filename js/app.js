@@ -1,16 +1,31 @@
 /*
  * Create a list that holds all of your cards
  */
-let cartas = $(".card")
+let carta = $(".card");
+let cartas = [...card];
+let cartasviradas = [];
 
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
+$(function() {
 
-// Shuffle function from http://stackoverflow.com/a/2450976
+   // $('.card').click(game.selecionarCard);
+   // $('.restart').click(game.reset)
+    jogo.initGame();
+
+});
+
+class Jogo{
+    initGame(){
+        jogo.espalharcartas();
+    }
+function espalharcartas() {
+    cartas = shuffle(cartas);
+    for (let i = 0; i < cartas.length; i++) {
+        document.querySelector(".deck").innerHTML = "";
+        [].forEach.call(cards, function (item) {
+            document.querySelector(".deck").appendChild(item);
+        });
+    }
+}
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -24,7 +39,31 @@ function shuffle(array) {
 
     return array;
 }
+selecionarCard(){
 
+    let carta= $(this);
+
+    if (card.hasClass('open show') || card.hasClass("match")){
+        return;
+    }
+    if (!iniciarJogo) {
+        iniciarJogo = true;
+        cronometro = setTimeout(game.iniciarCronometro(), 500);
+    }
+
+    if (cardsVirados.length < 2){
+        $(this).toggleClass("open show");
+        cardsVirados.push($(this));
+    }
+
+    if (cardsVirados.length === 2){
+        //game.verificaCardsVirados(cardsVirados)
+        cardsVirados = [];
+    }
+
+   // game.atualizarNumeroDeJogadas();
+
+}
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -36,3 +75,5 @@ function shuffle(array) {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+}
+let jogo = new Jogo();//objeto da classe jogo
