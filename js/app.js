@@ -2,31 +2,54 @@
  * Create a list that holds all of your cards
  */
 let carta = $(".card");
-let cartas = [...card];
+let cartas = [...carta];
 let cartasviradas = [];
+let estadoJogo = false;
+let carta1, carta2;
+let numCartas = 0;
 
-$(function() {
+$(function () {
 
-   // $('.card').click(game.selecionarCard);
-   // $('.restart').click(game.reset)
+    //$('.card').click(game.escolherCarta);
+    // $('.restart').click(game.reset)
     jogo.initGame();
 
 });
 
-class Jogo{
-    initGame(){
-        jogo.espalharcartas();
+class Jogo {
+    initGame() {
+       jogo.espalharcartas();
     }
-function espalharcartas() {
-    cartas = shuffle(cartas);
+espalharcartas(){
+    cartas = jogo.shuffle(cartas);
     for (let i = 0; i < cartas.length; i++) {
         document.querySelector(".deck").innerHTML = "";
-        [].forEach.call(cards, function (item) {
+        [].forEach.call(cartas, function (item) {
             document.querySelector(".deck").appendChild(item);
         });
     }
 }
-function shuffle(array) {
+escolherCarta() {
+
+    if (estadoJogo != true) {
+        estadoJogo = true;
+    }
+    if (cartasviradas.length < 2) {
+        $(this).toggleClass("open show");
+        cartasviradas[numCartas++] = $(this);
+    }
+    if (cartasviradas.length == 2) {
+        jogo.verificarSeAcertou(cartasviradas);
+        numCartas = 0;
+    }
+
+}
+verificarSeAcertou(cartasviradas) {
+    carta1 = card[0].firstChild.nextSibling.classList[1];
+    carta2 = card[1].firstChild.nextSibling.classList[2];
+    alert(carta1);
+}
+shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
     while (currentIndex !== 0) {
@@ -39,31 +62,7 @@ function shuffle(array) {
 
     return array;
 }
-selecionarCard(){
 
-    let carta= $(this);
-
-    if (card.hasClass('open show') || card.hasClass("match")){
-        return;
-    }
-    if (!iniciarJogo) {
-        iniciarJogo = true;
-        cronometro = setTimeout(game.iniciarCronometro(), 500);
-    }
-
-    if (cardsVirados.length < 2){
-        $(this).toggleClass("open show");
-        cardsVirados.push($(this));
-    }
-
-    if (cardsVirados.length === 2){
-        //game.verificaCardsVirados(cardsVirados)
-        cardsVirados = [];
-    }
-
-   // game.atualizarNumeroDeJogadas();
-
-}
 
 /*
  * set up the event listener for a card. If a card is clicked:
