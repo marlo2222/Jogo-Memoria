@@ -11,7 +11,7 @@ let numCartas = 0;
 $(function () {
 
     //$('.card').click(game.escolherCarta);
-    // $('.restart').click(game.reset)
+    $('.restart').click(jogo.reiniciar());
     jogo.initGame();
 
 });
@@ -61,6 +61,10 @@ shuffle(array) {
     }
 
     return array;
+}
+//reiniciar o jogo
+reiniciar(){
+  //  location.reload(true);
 }
 
 
