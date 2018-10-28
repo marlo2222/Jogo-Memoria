@@ -64,7 +64,7 @@ shuffle(array) {
 }
 //reiniciar o jogo
 reiniciar(){
-  //  location.reload(true);
+  //modifi  location.reload(true);
 }
 
 
