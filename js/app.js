@@ -1,111 +1,208 @@
-/*
- * Create a list that holds all of your cards
- */
-let carta = $(".card");
+//VAR's
+let carta = document.getElementsByClassName("card");
 let cartas = [...carta];
-let cartasviradas = [];
-let estadoJogo = false;
-let carta1, carta2;
-let numCartas = 0;
-let cartaoEscolhido;
+let cartoesAbertos = [];
+let matchedCard = document.getElementsByClassName("match");
+let movimentos = 0;
 
-$(function () {
+//POPUP DE PRABENS
+const popup = document.getElementById("parabens-popup");
 
-    $('.card').click(jogo.escolherCarta);
-    //$('.restart').click(jogo.reiniciar());
-    jogo.initGame();
+let refreshHTML = function (target, value) {
+    return target.innerHTML = value;
+};
 
-});
+let CounterSet = function (movimentos) {
+    this.target = document.querySelector(".counter");
+    refreshHTML(this.target, movimentos);
+};
 
-class Jogo {
-    initGame() {
-        jogo.espalharcartas();
+//CONTADOR DE MOVIMENTOS
+CounterSet.prototype.add = function () {
+    movimentos++;
+    refreshHTML(this.target, movimentos);
+};
+
+//ATUALIZAR-RESETAR O CONTATADOR
+
+CounterSet.prototype.restart = function () {
+    movimentos = 0;
+    refreshHTML(this.target, movimentos);
+};
+
+let counter = new CounterSet(movimentos);
+
+//ESTRELA - ATÉ 15 MOVIMENTOS = 3 ESTRELAS, ATÉ 23 MOVIMENTOS = 2 ESTRELAS, ACIMA DE 23 MOVIMENTOS = 1 ESTRELA
+let PlcarEstrela = function () {
+    this.estrelas = document.querySelectorAll(".fa-star");
+};
+
+PlcarEstrela.prototype.rate = function () {
+    if (movimentos > 15 && movimentos < 23) {
+        this.estrelas[2].classList.remove("luz");
+    } else if (movimentos > 23) {
+        this.estrelas[1].classList.remove("luz");
     }
-    espalharcartas() {
-        cartas = jogo.shuffle(cartas);
-        for (let i = 0; i < cartas.length; i++) {
-            document.querySelector(".deck").innerHTML = ""; // alterando os elementos dos filhos de deck para vazio 
-            [].forEach.call(cartas, function (item) {
-                document.querySelector(".deck").appendChild(item);
-            });
-        }
+};
+
+PlcarEstrela.prototype.restart = function () {
+    for (var i = 0; i < this.estrelas.length; i++) {
+        this.estrelas[i].classList.add("luz");
     }
-    escolherCarta() {
-        jogo.cartaoEscolhido = $(this);
+};
 
-        if (estadoJogo != true) {
-            estadoJogo = true;
-        }
-        if(jogo.cartaoEscolhido.hasClass("open show")){
-            return;
-        }
-        if (cartasviradas.length < 2) {
-            $(this).toggleClass("open show"); // adicionando open show a class selecionada
-            cartasviradas[numCartas++] = $(this);
-        }
-        if (cartasviradas.length === 2) {
-            jogo.verificarSeAcertou(cartasviradas);
-            cartasviradas = []; 
-            numCartas = 0;
-        }
+let estrelas = new PlcarEstrela();
 
-    }
-    obterImagemDoCard(card){
-        return card[0].firstChild.nextSibling.classList[1];
-      }
-    verificarSeAcertou(cartasviradas) {
-        jogo.carta1 =  obterImagemDoCard(jogo.cartasviradas[0]);
-        jogo.carta2 =  obterImagemDoCard(jogo.cartasviradas[1])
-
-        if ( carta1 === carta2){
-            //cardsEncontrados++;
-            jogo.cartasviradas.forEach(function(carta){
-                carta.animateCss('tada', function(){
-                    carta.toggleClass("open show match");
-                });
-            });
-        } else {
-            jogo.cartasviradas.forEach(function(carta){
-                carta.animateCss('shake', function(){
-                    carta.toggleClass("open show");
-                });
-            });
-        }
-
-        //if (cardsEncontrados === 8){
-
-         //   game.finalizarJogo()
-        //}
-      
-    }
-    shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex;
-
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-
-        return array;
-    }
-    //reiniciar o jogo
-    reiniciar() {
-        //modifi  location.reload(true);
-    }
+//DECLANDO O TIMER
+const timer = document.querySelector(".timer");
 
 
-    /*
-     * set up the event listener for a card. If a card is clicked:
-     *  - display the card's symbol (put this functionality in another function that you call from this one)
-     *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
-     *  - if the list already has another card, check to see if the two cards match
-     *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
-     *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
-     *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
-     *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
-     */
+//MOSTRANDO MINUTOS E SEGUNDOS 
+let second = {
+    value: 0,
+    label: " "
+};
+
+let minute = {
+    value: 0,
+    label: " : "
+};
+
+let interval;
+
+window.onload = iniciarJogo();
+
+// LISTANDO OS EVENTOS
+for (var i = 0; i < cartas.length; i++) {
+    cartas[i].addEventListener("click", mostrarCartao);
+    cartas[i].addEventListener("click", abrirCartao);
+    //	cartas[i].addEventListener("click", parabens);
 }
-let jogo = new Jogo();//objeto da classe jogo
+
+//RESETAR O BTN
+document.querySelector(".restart").addEventListener("click", iniciarJogo);
+
+//SHUFFLE (ANOTADO PÁGINA 50)
+function shuffle(array) {
+    var currentIndex = array.length, timerraryValue, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        timerraryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = timerraryValue;
+    }
+
+    return array;
+}
+
+//COMEÇA UM NOVO JOGO
+function iniciarJogo() {
+    cartas = shuffle(cartas);
+    for (var i = 0; i < cartas.length; i++) {
+        document.querySelector(".deck").innerHTML = "";
+        [].forEach.call(cartas, function (item) {
+            document.querySelector(".deck").appendChild(item);
+        });
+
+    }
+    reiniciar();
+
+}
+function reiniciar() {
+    counter.restart();
+    estrelas.restart();
+    reiniciartimer();
+    desvirarCartas();
+}
+function desvirarCartas() {
+    for (let i = 0; i < cartas.length; i++) {
+        cartas[i].classList.remove("show", "open", "match", "disabled");
+    }
+}
+//DEFININDO FUNCIONALIDADE
+function mostrarCartao() {
+    this.classList.toggle("open");
+    this.classList.toggle("show");
+    this.classList.toggle("disabled");
+}
+
+function abrirCartao() {
+    cartoesAbertos.push(this);
+    if (cartoesAbertos.length === 2) {
+        counter.add();
+        estrelas.rate();
+     iniciartime();
+        if (cartoesAbertos[0].type === cartoesAbertos[1].type) {
+            matched();
+        } else {
+            unmatched();
+        }
+    }
+}
+
+//cartas IGUAIS
+function matched() {
+    for (var i = 0; i < cartoesAbertos.length; i++) {
+        cartoesAbertos[i].classList.add("match", "disabled");
+        cartoesAbertos[i].classList.remove("show", "open", "no-event");
+    }
+    cartoesAbertos = [];
+}
+
+//cartas DIFERENTES
+function unmatched() {
+    for (var i = 0; i < cartoesAbertos.length; i++) {
+        cartoesAbertos[i].classList.add("unmatched");
+    }
+    disable();
+    setTimeout(function () {
+        for (var i = 0; i < cartoesAbertos.length; i++) {
+            cartoesAbertos[i].classList.remove("show", "open", "no-event", "unmatched");
+        }
+        enable();
+        cartoesAbertos = [];
+    }, 1100);
+}
+
+function disable() {
+    for (var i = 0; i < cartas.length; i++) {
+        cartas[i].classList.add("disabled");
+    }
+}
+
+
+function enable() {
+    for (var i = 0; i < cartas.length; i++) {
+        if (!cartas[i].classList.contains("match")) {
+            cartas[i].classList.remove("disabled");
+        };
+    }
+}
+
+//ATURALIZAR E RESETAR O TEMPO
+function refreshtimer() {
+    timer.innerHTML = minute.value + minute.label + second.value + second.label;
+}
+
+function reiniciartimer() {
+    second.value = 0;
+    minute.value = 0;
+    refreshtimer();
+}
+
+// INICIAR O TEMPO
+function iniciartime() {
+    if (movimentos == 1) {
+        interval = setInterval(function () {
+            second.value++;
+            if (second.value == 60) {
+                minute.value++;
+                second.value = 0;
+            }
+            refreshtimer();
+        }, 1000);
+    }
+}
+
+
