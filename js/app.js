@@ -74,7 +74,7 @@ window.onload = iniciarJogo();
 
 // LISTANDO OS EVENTOS
 for (var i = 0; i < cartas.length; i++) {
-    cartas[i].addEventListener("click", mostrarCartao);
+    //cartas[i].addEventListener("click", mostrarCartao);
     cartas[i].addEventListener("click", abrirCartao);
     //	cartas[i].addEventListener("click", parabens);
 }
@@ -82,7 +82,18 @@ for (var i = 0; i < cartas.length; i++) {
 //RESETAR O BTN
 document.querySelector(".restart").addEventListener("click", iniciarJogo);
 
-//SHUFFLE (ANOTADO PÁGINA 50)
+function iniciarJogo() {//iniciando
+    cartas = shuffle(cartas);
+    for (var i = 0; i < cartas.length; i++) {
+        document.querySelector(".deck").innerHTML = "";
+        [].forEach.call(cartas, function (item) {
+            document.querySelector(".deck").appendChild(item);
+        });
+
+    }
+    reiniciarValores();
+}
+
 function shuffle(array) {
     var currentIndex = array.length, timerraryValue, randomIndex;
     while (currentIndex !== 0) {
@@ -96,30 +107,21 @@ function shuffle(array) {
     return array;
 }
 
-//COMEÇA UM NOVO JOGO
-function iniciarJogo() {
-    cartas = shuffle(cartas);
-    for (var i = 0; i < cartas.length; i++) {
-        document.querySelector(".deck").innerHTML = "";
-        [].forEach.call(cartas, function (item) {
-            document.querySelector(".deck").appendChild(item);
-        });
 
-    }
-    reiniciar();
 
-}
-function reiniciar() {
-    counter.restart();
+function reiniciarValores() {
+    counter.restart()
     estrelas.restart();
     reiniciartimer();
-    desvirarCartas();
+    cartasDefaul();
 }
-function desvirarCartas() {
+
+function cartasDefaul() {
     for (let i = 0; i < cartas.length; i++) {
         cartas[i].classList.remove("show", "open", "match", "disabled");
     }
 }
+
 //DEFININDO FUNCIONALIDADE
 function mostrarCartao() {
     this.classList.toggle("open");
@@ -128,7 +130,15 @@ function mostrarCartao() {
 }
 
 function abrirCartao() {
-    cartoesAbertos.push(this);
+    let cartaoAux = $(this);
+    if(cartaoAux.hasClass('open show') || cartaoAux.hasClass("match")){
+        return;
+    }
+    if(cartoesAbertos.length < 2){
+        $(this).toggleClass("open show");
+        cartoesAbertos.push(this);
+    }
+    
     if (cartoesAbertos.length === 2) {
         counter.add();
         estrelas.rate();
@@ -144,8 +154,8 @@ function abrirCartao() {
 //cartas IGUAIS
 function matched() {
     for (var i = 0; i < cartoesAbertos.length; i++) {
-        cartoesAbertos[i].classList.add("match", "disabled");
-        cartoesAbertos[i].classList.remove("show", "open", "no-event");
+        cartoesAbertos[i].classList.add("match");
+        cartoesAbertos[i].classList.remove("show", "open");
     }
     cartoesAbertos = [];
 }
@@ -153,12 +163,12 @@ function matched() {
 //cartas DIFERENTES
 function unmatched() {
     for (var i = 0; i < cartoesAbertos.length; i++) {
-        cartoesAbertos[i].classList.add("unmatched");
+      //  cartoesAbertos[i].classList.add("unmatched");
     }
     disable();
     setTimeout(function () {
         for (var i = 0; i < cartoesAbertos.length; i++) {
-            cartoesAbertos[i].classList.remove("show", "open", "no-event", "unmatched");
+            cartoesAbertos[i].classList.remove("show", "open");
         }
         enable();
         cartoesAbertos = [];
