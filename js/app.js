@@ -2,35 +2,31 @@
 let carta = document.getElementsByClassName("card");
 let cartas = [...carta];
 let cartoesAbertos = [];
-let matchedCard = document.getElementsByClassName("match");
 let movimentos = 0;
+let cartoesEncontrados = 0;
+this.target = document.querySelector(".counter");
+let timer = document.querySelector(".timer");
+let segundos = {value: 0,label: " "};
+let minutos = {value: 0, label: " : "};
+let intervalo;
 
 //POPUP DE PRABENS
 const popup = document.getElementById("parabens-popup");
 
-let refreshHTML = function (target, value) {
+// ---- movimentos
+function atualizarHTML (target, value) {
     return target.innerHTML = value;
-};
+}
 
-let CounterSet = function (movimentos) {
-    this.target = document.querySelector(".counter");
-    refreshHTML(this.target, movimentos);
-};
-
-//CONTADOR DE MOVIMENTOS
-CounterSet.prototype.add = function () {
-    movimentos++;
-    refreshHTML(this.target, movimentos);
-};
-
-//ATUALIZAR-RESETAR O CONTATADOR
-
-CounterSet.prototype.restart = function () {
+function resetMovimentos(){
     movimentos = 0;
-    refreshHTML(this.target, movimentos);
-};
+    atualizarHTML(this.target, movimentos);    
+}
+function addMovimento(){
+    movimentos++;
+    atualizarHTML(this.target, movimentos);
+}
 
-let counter = new CounterSet(movimentos);
 
 //ESTRELA - ATÉ 15 MOVIMENTOS = 3 ESTRELAS, ATÉ 23 MOVIMENTOS = 2 ESTRELAS, ACIMA DE 23 MOVIMENTOS = 1 ESTRELA
 let PlcarEstrela = function () {
@@ -53,35 +49,45 @@ PlcarEstrela.prototype.restart = function () {
 
 let estrelas = new PlcarEstrela();
 
-//DECLANDO O TIMER
-const timer = document.querySelector(".timer");
 
 
-//MOSTRANDO MINUTOS E SEGUNDOS 
-let second = {
-    value: 0,
-    label: " "
-};
 
-let minute = {
-    value: 0,
-    label: " : "
-};
-
-let interval;
-
-window.onload = iniciarJogo();
-
-// LISTANDO OS EVENTOS
-for (var i = 0; i < cartas.length; i++) {
-    //cartas[i].addEventListener("click", mostrarCartao);
-    cartas[i].addEventListener("click", abrirCartao);
-    //	cartas[i].addEventListener("click", parabens);
+// ---- tempo
+function atualizarTempo() {
+    timer.innerHTML = minutos.value + minutos.label + segundos.value + segundos.label;
 }
 
-//RESETAR O BTN
+function reiniciarTempo() {
+    segundos.value = 0;
+    minutos.value = 0;
+    atualizarTempo();
+}
+
+function inicarTempo() {
+    if (movimentos == 1) {
+        intervalo = setInterval(function () {
+            segundos.value++;
+            if (segundos.value == 60) {
+                minutos.value++;
+                segundos.value = 0;
+            }
+            atualizarTempo();
+        }, 1000);
+    }
+}
+
+
+// ---- chamada do inicio do jogo
+window.onload = iniciarJogo();
+
+for (var i = 0; i < cartas.length; i++) {
+    cartas[i].addEventListener("click", abrirCartao);
+}
+
+// ---- reiniciar jogo
 document.querySelector(".restart").addEventListener("click", iniciarJogo);
 
+// iniciando o jogo;
 function iniciarJogo() {//iniciando
     cartas = shuffle(cartas);
     for (var i = 0; i < cartas.length; i++) {
@@ -107,23 +113,24 @@ function shuffle(array) {
     return array;
 }
 
-
-
+//---- valores padrão caso reinicie o "jogo"
 function reiniciarValores() {
-    counter.restart()
-    estrelas.restart();
-    reiniciartimer();
-    cartasDefaul();
+    resetMovimentos();
+    estrelas.restart()
+    reiniciarTempo();
+    reinicarCartas();
 }
 
-function cartasDefaul() {
+// ---- cartas estilo padrao
+function reinicarCartas() {
     for (let i = 0; i < cartas.length; i++) {
         cartas[i].classList.remove("show", "open", "match");
     }
 }
 
+// ---- abri cartao
 function abrirCartao() {
-
+    //usei um pouco de jquery aqui, não sei se poderia.
     let cartaoAux = $(this);
     if (cartaoAux.hasClass("open show") || cartaoAux.hasClass("match")) {
         return;
@@ -132,12 +139,14 @@ function abrirCartao() {
         $(this).toggleClass("open show");
         cartoesAbertos.push(this);
     }
-
     if (cartoesAbertos.length === 2) {
-        counter.add();
+        addMovimento();
         estrelas.rate();
-        iniciartime();
+        inicarTempo();
         verificarCartoes();
+    }
+    if(cartoesEncontrados === 8){
+        alert("voce conseguiu seu imprestavel");
     }
 }
 
@@ -147,42 +156,13 @@ function verificarCartoes() {
             $(cartoesAbertos[i]).toggleClass("match");
         }
         cartoesAbertos = [];
+        cartoesEncontrados++;
     } else {
         setTimeout(function () {
             for (var i = 0; i < cartoesAbertos.length; i++) {
                 $(cartoesAbertos[i]).toggleClass("open show")
             }
-
             cartoesAbertos = [];
         }, 900);
     }
 }
-
-
-
-//ATURALIZAR E RESETAR O TEMPO
-function refreshtimer() {
-    timer.innerHTML = minute.value + minute.label + second.value + second.label;
-}
-
-function reiniciartimer() {
-    second.value = 0;
-    minute.value = 0;
-    refreshtimer();
-}
-
-// INICIAR O TEMPO
-function iniciartime() {
-    if (movimentos == 1) {
-        interval = setInterval(function () {
-            second.value++;
-            if (second.value == 60) {
-                minute.value++;
-                second.value = 0;
-            }
-            refreshtimer();
-        }, 1000);
-    }
-}
-
-
