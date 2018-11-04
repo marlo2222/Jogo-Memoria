@@ -69,6 +69,8 @@ h1 {
     transform: rotateY(0);
     background: #02b3e4;
     cursor: default;
+    animation-name: bounceIn;
+    animation-duration: 0.5s;
 }
 
 .deck .card.show {
@@ -111,6 +113,30 @@ h1 {
     cursor: pointer;
 }
 
+.counter, .timer {
+    display: inline-block;
+}
+
+.stars,.counter, .timer {
+    margin: 0 10px;
+}
+
+.stars li {
+list-style: none;
+display: inline-block;
+}
+
+.fa-star {
+    color: rgb(226, 241, 13);
+}
+
+.fa-star.dull {
+    color: #D8F0F3;
+}
+
+.fa-repeat{
+    color: rgb(210, 233, 10);
+}
 @keyframes tada {
    
     10%, 20% {
@@ -130,3 +156,22 @@ h1 {
     transform: scale3d(1, 1, 1);
     }
 } 
+@keyframes bounceIn{
+    0%{
+      opacity: 0;
+      transform: scale(0.3) translate3d(0,0,0);
+    }
+    50%{
+      opacity: 0.9;
+      transform: scale(1.1);
+    }
+    80%{
+      opacity: 1;
+      transform: scale(0.89);
+    }
+    100%{
+      opacity: 1;
+      transform: scale(1) translate3d(0,0,0);
+    }
+  }
+  

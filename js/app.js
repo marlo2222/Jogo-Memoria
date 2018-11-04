@@ -4,50 +4,51 @@ let cartas = [...carta];
 let cartoesAbertos = [];
 let movimentos = 0;
 let cartoesEncontrados = 0;
+//let estrelas = document.querySelectorAll(".fa-star");
 this.target = document.querySelector(".counter");
 let timer = document.querySelector(".timer");
-let segundos = {value: 0,label: " "};
-let minutos = {value: 0, label: " : "};
+let segundos = { value: 0, label: " " };
+let minutos = { value: 0, label: " : " };
 let intervalo;
 
 //POPUP DE PRABENS
 const popup = document.getElementById("parabens-popup");
 
 // ---- movimentos
-function atualizarHTML (target, value) {
+function atualizarHTML(target, value) {
     return target.innerHTML = value;
 }
 
-function resetMovimentos(){
-    movimentos = 0;
-    atualizarHTML(this.target, movimentos);    
-}
-function addMovimento(){
+function addMovimento() {
     movimentos++;
     atualizarHTML(this.target, movimentos);
 }
 
+// --- reiniciando valores "novo jogo"
+function resetMovimentos() {
+    movimentos = 0;
+    atualizarHTML(this.target, movimentos);
+}
+
+function reiniciarTempo() {
+    segundos.value = 0;
+    minutos.value = 0;
+    atualizarTempo();
+}
+
+function reinicarCartas() {
+    for (let i = 0; i < cartas.length; i++) {
+        cartas[i].classList.remove("show", "open", "match");
+    }
+}
 
 //ESTRELA - ATÉ 15 MOVIMENTOS = 3 ESTRELAS, ATÉ 23 MOVIMENTOS = 2 ESTRELAS, ACIMA DE 23 MOVIMENTOS = 1 ESTRELA
-let PlcarEstrela = function () {
+
+function removeEstrela(i){
     this.estrelas = document.querySelectorAll(".fa-star");
-};
+    this.estrelas[i].classList.add("dull");
+}
 
-PlcarEstrela.prototype.rate = function () {
-    if (movimentos > 15 && movimentos < 23) {
-        this.estrelas[2].classList.remove("luz");
-    } else if (movimentos > 23) {
-        this.estrelas[1].classList.remove("luz");
-    }
-};
-
-PlcarEstrela.prototype.restart = function () {
-    for (var i = 0; i < this.estrelas.length; i++) {
-        this.estrelas[i].classList.add("luz");
-    }
-};
-
-let estrelas = new PlcarEstrela();
 
 
 
@@ -55,12 +56,6 @@ let estrelas = new PlcarEstrela();
 // ---- tempo
 function atualizarTempo() {
     timer.innerHTML = minutos.value + minutos.label + segundos.value + segundos.label;
-}
-
-function reiniciarTempo() {
-    segundos.value = 0;
-    minutos.value = 0;
-    atualizarTempo();
 }
 
 function inicarTempo() {
@@ -85,7 +80,11 @@ for (var i = 0; i < cartas.length; i++) {
 }
 
 // ---- reiniciar jogo
-document.querySelector(".restart").addEventListener("click", iniciarJogo);
+document.querySelector(".restart").addEventListener("click", reset);
+
+function reset(){
+    location.reload();
+}
 
 // iniciando o jogo;
 function iniciarJogo() {//iniciando
@@ -116,17 +115,11 @@ function shuffle(array) {
 //---- valores padrão caso reinicie o "jogo"
 function reiniciarValores() {
     resetMovimentos();
-    estrelas.restart()
     reiniciarTempo();
     reinicarCartas();
 }
 
-// ---- cartas estilo padrao
-function reinicarCartas() {
-    for (let i = 0; i < cartas.length; i++) {
-        cartas[i].classList.remove("show", "open", "match");
-    }
-}
+
 
 // ---- abri cartao
 function abrirCartao() {
@@ -140,12 +133,11 @@ function abrirCartao() {
         cartoesAbertos.push(this);
     }
     if (cartoesAbertos.length === 2) {
-        addMovimento();
-        estrelas.rate();
+       atualizarJogadas();
         inicarTempo();
         verificarCartoes();
     }
-    if(cartoesEncontrados === 8){
+    if (cartoesEncontrados === 8) {
         alert("voce conseguiu seu imprestavel");
     }
 }
@@ -163,6 +155,15 @@ function verificarCartoes() {
                 $(cartoesAbertos[i]).toggleClass("open show")
             }
             cartoesAbertos = [];
-        }, 900);
+        }, 1000);
+    }
+}
+
+function atualizarJogadas(){
+    addMovimento();
+    if (movimentos > 15 && movimentos < 23) {
+        removeEstrela(2);
+    } else if (movimentos > 23) {
+       removeEstrela(1);
     }
 }
