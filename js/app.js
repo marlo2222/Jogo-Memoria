@@ -118,77 +118,47 @@ function reiniciarValores() {
 
 function cartasDefaul() {
     for (let i = 0; i < cartas.length; i++) {
-        cartas[i].classList.remove("show", "open", "match", "disabled");
+        cartas[i].classList.remove("show", "open", "match");
     }
-}
-
-//DEFININDO FUNCIONALIDADE
-function mostrarCartao() {
-    this.classList.toggle("open");
-    this.classList.toggle("show");
-    this.classList.toggle("disabled");
 }
 
 function abrirCartao() {
+
     let cartaoAux = $(this);
-    if(cartaoAux.hasClass('open show') || cartaoAux.hasClass("match")){
+    if (cartaoAux.hasClass("open show") || cartaoAux.hasClass("match")) {
         return;
     }
-    if(cartoesAbertos.length < 2){
+    if (cartoesAbertos.length < 2) {
         $(this).toggleClass("open show");
         cartoesAbertos.push(this);
     }
-    
+
     if (cartoesAbertos.length === 2) {
         counter.add();
         estrelas.rate();
-     iniciartime();
-        if (cartoesAbertos[0].type === cartoesAbertos[1].type) {
-            matched();
-        } else {
-            unmatched();
-        }
+        iniciartime();
+        verificarCartoes();
     }
 }
 
-//cartas IGUAIS
-function matched() {
-    for (var i = 0; i < cartoesAbertos.length; i++) {
-        cartoesAbertos[i].classList.add("match");
-        cartoesAbertos[i].classList.remove("show", "open");
-    }
-    cartoesAbertos = [];
-}
-
-//cartas DIFERENTES
-function unmatched() {
-    for (var i = 0; i < cartoesAbertos.length; i++) {
-      //  cartoesAbertos[i].classList.add("unmatched");
-    }
-    disable();
-    setTimeout(function () {
+function verificarCartoes() {
+    if (cartoesAbertos[0].type === cartoesAbertos[1].type) {
         for (var i = 0; i < cartoesAbertos.length; i++) {
-            cartoesAbertos[i].classList.remove("show", "open");
+            $(cartoesAbertos[i]).toggleClass("match");
         }
-        enable();
         cartoesAbertos = [];
-    }, 1100);
-}
+    } else {
+        setTimeout(function () {
+            for (var i = 0; i < cartoesAbertos.length; i++) {
+                $(cartoesAbertos[i]).toggleClass("open show")
+            }
 
-function disable() {
-    for (var i = 0; i < cartas.length; i++) {
-        cartas[i].classList.add("disabled");
+            cartoesAbertos = [];
+        }, 900);
     }
 }
 
 
-function enable() {
-    for (var i = 0; i < cartas.length; i++) {
-        if (!cartas[i].classList.contains("match")) {
-            cartas[i].classList.remove("disabled");
-        };
-    }
-}
 
 //ATURALIZAR E RESETAR O TEMPO
 function refreshtimer() {
