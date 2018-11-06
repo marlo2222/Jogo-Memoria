@@ -4,15 +4,13 @@ let cartas = [...carta];
 let cartoesAbertos = [];
 let movimentos = 0;
 let cartoesEncontrados = 0;
-//let estrelas = document.querySelectorAll(".fa-star");
 this.target = document.querySelector(".counter");
 let timer = document.querySelector(".timer");
 let segundos = { value: 0, label: " " };
 let minutos = { value: 0, label: " : " };
 let intervalo;
 
-//POPUP DE PRABENS
-const popup = document.getElementById("parabens-popup");
+
 
 // ---- movimentos
 function atualizarHTML(target, value) {
@@ -24,34 +22,11 @@ function addMovimento() {
     atualizarHTML(this.target, movimentos);
 }
 
-// --- reiniciando valores "novo jogo"
-function resetMovimentos() {
-    movimentos = 0;
-    atualizarHTML(this.target, movimentos);
-}
-
-function reiniciarTempo() {
-    segundos.value = 0;
-    minutos.value = 0;
-    atualizarTempo();
-}
-
-function reinicarCartas() {
-    for (let i = 0; i < cartas.length; i++) {
-        cartas[i].classList.remove("show", "open", "match");
-    }
-}
-
-//ESTRELA - ATÉ 15 MOVIMENTOS = 3 ESTRELAS, ATÉ 23 MOVIMENTOS = 2 ESTRELAS, ACIMA DE 23 MOVIMENTOS = 1 ESTRELA
-
-function removeEstrela(i){
+//estrelas: jogadas <= 15 : 3 estrelas,  jogadas <= 23 : 2 estrelas 
+function removeEstrela(i) {
     this.estrelas = document.querySelectorAll(".fa-star");
     this.estrelas[i].classList.add("dull");
 }
-
-
-
-
 
 // ---- tempo
 function atualizarTempo() {
@@ -82,7 +57,7 @@ for (var i = 0; i < cartas.length; i++) {
 // ---- reiniciar jogo
 document.querySelector(".restart").addEventListener("click", reset);
 
-function reset(){
+function reset() {
     location.reload();
 }
 
@@ -96,7 +71,6 @@ function iniciarJogo() {//iniciando
         });
 
     }
-    reiniciarValores();
 }
 
 function shuffle(array) {
@@ -112,15 +86,6 @@ function shuffle(array) {
     return array;
 }
 
-//---- valores padrão caso reinicie o "jogo"
-function reiniciarValores() {
-    resetMovimentos();
-    reiniciarTempo();
-    reinicarCartas();
-}
-
-
-
 // ---- abri cartao
 function abrirCartao() {
     //usei um pouco de jquery aqui, não sei se poderia.
@@ -133,12 +98,12 @@ function abrirCartao() {
         cartoesAbertos.push(this);
     }
     if (cartoesAbertos.length === 2) {
-       atualizarJogadas();
+        atualizarJogadas();
         inicarTempo();
         verificarCartoes();
     }
-    if (cartoesEncontrados === 8) {
-        alert("voce conseguiu seu imprestavel");
+    if (cartoesEncontrados === 1) {
+        terminarJogo();
     }
 }
 
@@ -159,11 +124,23 @@ function verificarCartoes() {
     }
 }
 
-function atualizarJogadas(){
+function atualizarJogadas() {
     addMovimento();
-    if (movimentos > 15 && movimentos < 23) {
+    if (movimentos > 12 && movimentos < 20) {
         removeEstrela(2);
-    } else if (movimentos > 23) {
-       removeEstrela(1);
+    } else if (movimentos > 20) {
+        removeEstrela(1);
     }
+}
+
+function terminarJogo() {
+    swal({
+        title: "Parabens!!!",
+        text: "você concluiu o jogo com " +movimentos + " movimentos.",
+        type: "success",
+        timer: 5000,
+        showConfirmButton: false
+      }, function(){
+            window.location.href = "index.html";
+      });
 }
