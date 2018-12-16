@@ -1,3 +1,5 @@
+/*univercidade federal do ceará - campus russas
+https://github.com/marlo2222/*/
 //VAR's
 let carta = document.getElementsByClassName("card");
 let cartas = [...carta];
@@ -102,7 +104,7 @@ function abrirCartao() {
         inicarTempo();
         verificarCartoes();
     }
-    if (cartoesEncontrados === 1) {
+    if (cartoesEncontrados === 8) {
         terminarJogo();
     }
 }
